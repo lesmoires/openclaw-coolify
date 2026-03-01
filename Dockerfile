@@ -46,8 +46,8 @@ RUN ln -sf /usr/bin/python3 /usr/bin/python && \
 ########################################
 FROM base AS runtimes
 
-ENV BUN_INSTALL=/data/.bun \
-    PATH=/usr/local/go/bin:/data/.bun/bin:/data/.bun/install/global/bin:$PATH
+ENV BUN_INSTALL="/data/.bun" \
+    PATH="/usr/local/go/bin:/data/.bun/bin:/data/.bun/install/global/bin:$PATH"
 
 # Install Bun (allow bun to manage compatible node)
 RUN curl -fsSL https://bun.sh/install | bash
@@ -56,7 +56,7 @@ RUN curl -fsSL https://bun.sh/install | bash
 RUN pip3 install ipython csvkit openpyxl python-docx pypdf botasaurus browser-use playwright --break-system-packages && \
     playwright install-deps
 
-ENV XDG_CACHE_HOME=/data/.cache
+ENV XDG_CACHE_HOME="/data/.cache"
 
 ########################################
 # Stage 3: Dependencies
@@ -75,14 +75,16 @@ RUN --mount=type=cache,target=/data/.bun/install/cache \
     bun install -g @openai/codex @google/gemini-cli opencode-ai @steipete/summarize @hyperbrowser/agent clawhub
 
 # Ensure global npm bin is in PATH
-ENV PATH=/usr/local/bin:/usr/local/lib/node_modules/.bin:$PATH
+ENV PATH="/usr/local/bin:/usr/local/lib/node_modules/.bin:${PATH}"
 
-# OpenClaw - Install from GitHub via npm
+# OpenClaw - Build from official GitHub repo (replaces npm install)
 RUN --mount=type=cache,target=/data/.npm \
     if [ "$OPENCLAW_BETA" = "true" ]; then \
-        npm install -g github:openclaw/openclaw; \
+        git clone --depth 1 --branch main https://github.com/openclaw/openclaw.git /tmp/openclaw-src && \
+        cd /tmp/openclaw-src && npm install && npm run build && npm link; \
     else \
-        npm install -g github:openclaw/openclaw; \
+        git clone --depth 1 --branch main https://github.com/openclaw/openclaw.git /tmp/openclaw-src && \
+        cd /tmp/openclaw-src && npm install && npm run build && npm link; \
     fi
 
 # Install uv explicitly
@@ -90,7 +92,7 @@ RUN curl -L https://github.com/azlux/uv/releases/latest/download/uv-linux-x64 -o
     chmod +x /usr/local/bin/uv
 
 # Make sure uv and other local bins are available
-ENV PATH=/root/.local/bin:$PATH
+ENV PATH="/root/.local/bin:${PATH}"
 
 ########################################
 # Stage 4: Final
@@ -103,6 +105,6 @@ COPY . .
 # Symlinks
 RUN chmod +x /app/scripts/*.sh
 
-ENV PATH=/usr/local/bin:/usr/local/lib/node_modules/.bin:/root/.local/bin:/usr/local/go/bin:/usr/bin:/bin:/data/.bun/bin:/data/.bun/install/global/bin
+ENV PATH="/usr/local/bin:/usr/local/lib/node_modules/.bin:/root/.local/bin:/usr/local/go/bin:/usr/bin:/bin:/data/.bun/bin:/data/.bun/install/global/bin"
 EXPOSE 18789
 CMD ["bash", "/app/scripts/bootstrap.sh"]
