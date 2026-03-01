@@ -105,7 +105,7 @@ RUN groupadd -r node && useradd -r -g node -m -d /home/node node && \
 
 WORKDIR /app
 # Cache buster - change this to force rebuild
-ARG CACHE_BUST=1
+ARG CACHE_BUST=2
 COPY . .
 
 # Symlinks
