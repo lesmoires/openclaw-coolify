@@ -104,6 +104,8 @@ RUN groupadd -r node && useradd -r -g node -m -d /home/node node && \
     mkdir -p /data && chown -R node:node /data
 
 WORKDIR /app
+# Cache buster - change this to force rebuild
+ARG CACHE_BUST=1
 COPY . .
 
 # Symlinks
