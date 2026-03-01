@@ -104,6 +104,6 @@ COPY . .
 # Symlinks
 RUN chmod +x /app/scripts/*.sh
 
-ENV PATH="/root/.local/bin:/usr/local/go/bin:/usr/local/bin:/usr/bin:/bin:/data/.bun/bin:/data/.bun/install/global/bin"
+ENV PATH="/usr/local/bin:/usr/local/lib/node_modules/.bin:/root/.local/bin:/usr/local/go/bin:/usr/bin:/bin:/data/.bun/bin:/data/.bun/install/global/bin"
 EXPOSE 18789
 CMD ["bash", "/app/scripts/bootstrap.sh"]
