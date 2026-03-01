@@ -72,53 +72,36 @@ if [ ! -f "$CONFIG_FILE" ]; then
   TOKEN=$(openssl rand -hex 24 2>/dev/null || node -e "console.log(require('crypto').randomBytes(24).toString('hex'))")
   cat >"$CONFIG_FILE" <<EOF
 {
-"commands": {
+  "commands": {
     "native": true,
     "nativeSkills": true,
     "text": true,
     "bash": true,
     "config": true,
     "debug": true,
-    "restart": true,
-    "useAccessGroups": true
+    "restart": true
   },
   "plugins": {
-    "enabled": true,
-    "entries": {
-      "whatsapp": {
-        "enabled": true
-      },
-      "telegram": {
-        "enabled": true
-      },
-      "google-antigravity-auth": {
-        "enabled": true
-      }
-    }
+    "enabled": false,
+    "slots": { "memory": "memory-core" }
   },
+
   "skills": {
-    "allowBundled": [
-      "*"
-    ],
+    "allowBundled": ["*"],
     "install": {
       "nodeManager": "npm"
     }
   },
   "gateway": {
-  "port": $OPENCLAW_GATEWAY_PORT,
-  "mode": "local",
+    "port": ${OPENCLAW_GATEWAY_PORT:-18789},
+    "mode": "local",
     "bind": "lan",
     "controlUi": {
       "enabled": true,
-      "allowInsecureAuth": false
+      "allowInsecureAuth": false,
+      "dangerouslyAllowHostHeaderOriginFallback": true
     },
-    "trustedProxies": [
-      "*"
-    ],
-    "tailscale": {
-      "mode": "off",
-      "resetOnExit": false
-    },
+    "trustedProxies": ["*"],
     "auth": { "mode": "token", "token": "$TOKEN" }
   },
   "agents": {
@@ -126,21 +109,12 @@ if [ ! -f "$CONFIG_FILE" ]; then
       "workspace": "$WORKSPACE_DIR",
       "envelopeTimestamp": "on",
       "envelopeElapsed": "on",
-      "cliBackends": {},
-      "heartbeat": {
-        "every": "1h"
-      },
+      "heartbeat": { "every": "1h" },
       "maxConcurrent": 4,
-      "sandbox": {
-        "mode": "non-main",
-        "scope": "session",
-        "browser": {
-          "enabled": true
-        }
-      }
+      "memorySearch": { "enabled": false }
     },
     "list": [
-      { "id": "main","default": true, "name": "default",  "workspace": "${OPENCLAW_WORKSPACE:-/data/openclaw-workspace}"}
+      { "id": "main", "default": true, "name": "default", "workspace": "${OPENCLAW_WORKSPACE:-/data/openclaw-workspace}" }
     ]
   }
 }
@@ -211,4 +185,6 @@ echo "      openclaw onboard"
 echo ""
 echo "=================================================================="
 echo "🔧 Current ulimit is: $(ulimit -n)"
-exec npx openclaw gateway run
+echo "🩹 Running openclaw doctor --fix..."
+node /app/dist/index.js doctor --fix 2>/dev/null || true
+exec node /app/dist/index.js gateway run
