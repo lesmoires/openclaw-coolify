@@ -211,4 +211,4 @@ echo "      openclaw onboard"
 echo ""
 echo "=================================================================="
 echo "🔧 Current ulimit is: $(ulimit -n)"
-exec openclaw gateway run
+exec npx openclaw gateway run
