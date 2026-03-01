@@ -40,8 +40,6 @@ ENV XDG_CACHE_HOME=/data/.cache
 ########################################
 FROM runtimes AS dependencies
 
-# Install git for cloning openclaw
-RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
 ARG OPENCLAW_BETA=false
 ENV OPENCLAW_BETA=${OPENCLAW_BETA} \
