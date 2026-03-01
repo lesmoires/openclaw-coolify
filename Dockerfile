@@ -102,7 +102,7 @@ WORKDIR /app
 COPY . .
 
 # Symlinks
-    chmod +x /app/scripts/*.sh
+RUN chmod +x /app/scripts/*.sh
 
 ENV PATH="/root/.local/bin:/usr/local/go/bin:/usr/local/bin:/usr/bin:/bin:/data/.bun/bin:/data/.bun/install/global/bin"
 EXPOSE 18789
