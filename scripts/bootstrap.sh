@@ -5,9 +5,9 @@ if [ -f "/app/scripts/migrate-to-data.sh" ]; then
     bash "/app/scripts/migrate-to-data.sh"
 fi
 
-OPENCLAW_STATE="${OPENCLAW_STATE_DIR:-/data/.openclaw}"
+OPENCLAW_STATE="${OPENCLAW_STATE_DIR:-/home/node/.openclaw}"
 CONFIG_FILE="$OPENCLAW_STATE/openclaw.json"
-WORKSPACE_DIR="${OPENCLAW_WORKSPACE:-/data/openclaw-workspace}"
+WORKSPACE_DIR="${OPENCLAW_WORKSPACE:-/home/node/openclaw-workspace}"
 
 mkdir -p "$OPENCLAW_STATE" "$WORKSPACE_DIR"
 chmod 700 "$OPENCLAW_STATE"
@@ -18,7 +18,7 @@ chmod 700 "$OPENCLAW_STATE/credentials"
 
 for dir in .agents .ssh .config .local .cache .npm .bun .claude .kimi; do
     if [ ! -L "/root/$dir" ] && [ ! -e "/root/$dir" ]; then
-        ln -sf "/data/$dir" "/root/$dir"
+        ln -sf "/home/node/$dir" "/root/$dir"
     fi
 done
 
@@ -28,10 +28,10 @@ done
 seed_agent() {
   local id="$1"
   local name="$2"
-  local dir="/data/openclaw-$id"
+  local dir="/home/node/openclaw-$id"
 
   if [ "$id" = "main" ]; then
-    dir="${OPENCLAW_WORKSPACE:-/data/openclaw-workspace}"
+    dir="${OPENCLAW_WORKSPACE:-/home/node/openclaw-workspace}"
   fi
 
   mkdir -p "$dir"
@@ -140,7 +140,7 @@ if [ ! -f "$CONFIG_FILE" ]; then
       }
     },
     "list": [
-      { "id": "main","default": true, "name": "default",  "workspace": "${OPENCLAW_WORKSPACE:-/data/openclaw-workspace}"}
+      { "id": "main","default": true, "name": "default",  "workspace": "${OPENCLAW_WORKSPACE:-/home/node/openclaw-workspace}"}
     ]
   }
 }
