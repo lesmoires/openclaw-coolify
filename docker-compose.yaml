@@ -9,6 +9,7 @@ services:
   openclaw:
     image: fourplayers/openclaw:latest
     restart: on-failure:10
+    user: "1000:1000"
     ulimits:
       nofile:
         soft: 65535
@@ -21,15 +22,15 @@ services:
       PORT: 18789
       NODE_ENV: production
       NODE_OPTIONS: '--max-old-space-size=4096'
-      HOME: /data
+      HOME: /home/node
       TERM: xterm-256color
       HISTFILE: /data/.bash_history
       HISTSIZE: 50000
       HISTSAVE: 50000
       HISTCONTROL: ignoreboth
-      XDG_CONFIG_HOME: /data/.config
-      XDG_DATA_HOME: /data/.local/share
-      XDG_CACHE_HOME: /data/.cache
+      XDG_CONFIG_HOME: /home/node/.config
+      XDG_DATA_HOME: /home/node/.local/share
+      XDG_CACHE_HOME: /home/node/.cache
       NPM_CONFIG_CACHE: /data/.npm
       BUN_INSTALL: /data/.bun
       OPENCLAW_GATEWAY_BIND: lan
