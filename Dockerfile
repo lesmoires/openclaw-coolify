@@ -99,6 +99,10 @@ ENV PATH="/root/.local/bin:${PATH}"
 ########################################
 FROM dependencies AS final
 
+# Create node user with correct permissions
+RUN groupadd -r node && useradd -r -g node -m -d /home/node node && \
+    mkdir -p /data && chown -R node:node /data
+
 WORKDIR /app
 COPY . .
 
