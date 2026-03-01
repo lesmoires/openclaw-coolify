@@ -9,7 +9,6 @@ services:
   openclaw:
     image: fourplayers/openclaw:latest
     restart: on-failure:10
-    user: "1000:1000"
     ulimits:
       nofile:
         soft: 65535
@@ -22,21 +21,21 @@ services:
       PORT: 18789
       NODE_ENV: production
       NODE_OPTIONS: '--max-old-space-size=4096'
-      HOME: /home/node
+      HOME: /data
       TERM: xterm-256color
       HISTFILE: /data/.bash_history
       HISTSIZE: 50000
       HISTSAVE: 50000
       HISTCONTROL: ignoreboth
-      XDG_CONFIG_HOME: /home/node/.config
-      XDG_DATA_HOME: /home/node/.local/share
-      XDG_CACHE_HOME: /home/node/.cache
+      XDG_CONFIG_HOME: /data/.config
+      XDG_DATA_HOME: /data/.local/share
+      XDG_CACHE_HOME: /data/.cache
       NPM_CONFIG_CACHE: /data/.npm
       BUN_INSTALL: /data/.bun
       OPENCLAW_GATEWAY_BIND: lan
       OPENCLAW_GATEWAY_PORT: ${OPENCLAW_GATEWAY_PORT:-18789}
-      OPENCLAW_STATE_DIR: /home/node/.openclaw
-      OPENCLAW_WORKSPACE: /home/node/openclaw-workspace
+      OPENCLAW_STATE_DIR: /root/.openclaw
+      OPENCLAW_WORKSPACE: /root/openclaw-workspace
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       MINIMAX_API_KEY: ${MINIMAX_API_KEY}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
@@ -66,9 +65,9 @@ services:
       GITHUB_EMAIL: ${GITHUB_EMAIL}
       OPENCLAW_BETA: ${OPENCLAW_BETA:-false}
     volumes:
-      - openclaw-data:/home/node/data
-      - openclaw-config:/home/node/.openclaw
-      - openclaw-workspace:/home/node/openclaw-workspace
+      - openclaw-data:/data
+      - openclaw-config:/root/.openclaw
+      - openclaw-workspace:/root/openclaw-workspace
     depends_on:
       - docker-proxy
     command: ["bash", "/app/scripts/bootstrap.sh"]
