@@ -82,7 +82,7 @@ RUN --mount=type=cache,target=/data/.npm \
     if [ "$OPENCLAW_BETA" = "true" ]; then \
     npm install -g openclaw@beta; \
     else \
-    npm install -g openclaw; \
+    git clone https://github.com/openclaw/openclaw.git /tmp/openclaw-src 00260026 cd /tmp/openclaw-src 00260026 npm install 00260026 npm link; \
     fi 
 
 # Install uv explicitly
