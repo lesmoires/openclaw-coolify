@@ -81,10 +81,10 @@ ENV PATH="/usr/local/bin:/usr/local/lib/node_modules/.bin:${PATH}"
 RUN --mount=type=cache,target=/data/.npm \
     if [ "$OPENCLAW_BETA" = "true" ]; then \
         git clone https://github.com/openclaw/openclaw.git /tmp/openclaw-src && \
-        cd /tmp/openclaw-src && npm install && npm link; \
+        cd /tmp/openclaw-src cd /tmp/openclaw-src && npm install && npm linkcd /tmp/openclaw-src && npm install && npm link npm install cd /tmp/openclaw-src && npm install && npm linkcd /tmp/openclaw-src && npm install && npm link npm run build cd /tmp/openclaw-src && npm install && npm linkcd /tmp/openclaw-src && npm install && npm link npm link; \
     else \
         git clone https://github.com/openclaw/openclaw.git /tmp/openclaw-src && \
-        cd /tmp/openclaw-src && npm install && npm link; \
+        cd /tmp/openclaw-src cd /tmp/openclaw-src && npm install && npm linkcd /tmp/openclaw-src && npm install && npm link npm install cd /tmp/openclaw-src && npm install && npm linkcd /tmp/openclaw-src && npm install && npm link npm run build cd /tmp/openclaw-src && npm install && npm linkcd /tmp/openclaw-src && npm install && npm link npm link; \
     fi
 
 # Install uv explicitly
