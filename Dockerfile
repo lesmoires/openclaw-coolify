@@ -8,12 +8,33 @@ FROM node:20-bookworm-slim AS base
 ENV DEBIAN_FRONTEND=noninteractive \
     PIP_ROOT_USER_ACTION=ignore
 
+# Core packages + build tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl wget git unzip build-essential python3 python3-pip python3-venv \
-    jq lsof openssl ca-certificates gnupg ripgrep fd-find fzf bat \
-    pandoc poppler-utils ffmpeg imagemagick graphviz sqlite3 pass chromium \
+    curl \
+    wget \
+    git \
+    unzip \
+    build-essential \
+    python3 \
+    python3-pip \
+    python3-venv \
+    jq \
+    lsof \
+    openssl \
+    ca-certificates \
+    gnupg \
+    ripgrep fd-find fzf bat \
+    pandoc \
+    poppler-utils \
+    ffmpeg \
+    imagemagick \
+    graphviz \
+    sqlite3 \
+    pass \
+    chromium \
     && rm -rf /var/lib/apt/lists/*
 
+# CRITICAL FIX (native modules)
 ENV PYTHON=/usr/bin/python3 \
     npm_config_python=/usr/bin/python3
 
@@ -28,8 +49,10 @@ FROM base AS runtimes
 ENV BUN_INSTALL=/data/.bun \
     PATH=/usr/local/go/bin:/data/.bun/bin:/data/.bun/install/global/bin:$PATH
 
+# Install Bun (allow bun to manage compatible node)
 RUN curl -fsSL https://bun.sh/install | bash
 
+# Python tools
 RUN pip3 install ipython csvkit openpyxl python-docx pypdf botasaurus browser-use playwright --break-system-packages && \
     playwright install-deps
 
@@ -40,27 +63,33 @@ ENV XDG_CACHE_HOME=/data/.cache
 ########################################
 FROM runtimes AS dependencies
 
-
 ARG OPENCLAW_BETA=false
 ENV OPENCLAW_BETA=${OPENCLAW_BETA} \
     OPENCLAW_NO_ONBOARD=1 \
     NPM_CONFIG_UNSAFE_PERM=true
 
+# Bun global installs (with cache)
 RUN --mount=type=cache,target=/data/.bun/install/cache \
     bun install -g vercel @marp-team/marp-cli https://github.com/tobi/qmd && \
     bun pm -g untrusted && \
     bun install -g @openai/codex @google/gemini-cli opencode-ai @steipete/summarize @hyperbrowser/agent clawhub
 
+# Ensure global npm bin is in PATH
 ENV PATH=/usr/local/bin:/usr/local/lib/node_modules/.bin:$PATH
 
-# Install OpenClaw from GitHub with build
+# OpenClaw - Install from GitHub via npm
 RUN --mount=type=cache,target=/data/.npm \
-    git clone https://github.com/openclaw/openclaw.git /tmp/openclaw-src && \
-    cd /tmp/openclaw-src && npm install && npm run build && npm link
+    if [ "$OPENCLAW_BETA" = "true" ]; then \
+        npm install -g github:openclaw/openclaw; \
+    else \
+        npm install -g github:openclaw/openclaw; \
+    fi
 
+# Install uv explicitly
 RUN curl -L https://github.com/azlux/uv/releases/latest/download/uv-linux-x64 -o /usr/local/bin/uv && \
     chmod +x /usr/local/bin/uv
 
+# Make sure uv and other local bins are available
 ENV PATH=/root/.local/bin:$PATH
 
 ########################################
@@ -71,6 +100,7 @@ FROM dependencies AS final
 WORKDIR /app
 COPY . .
 
+# Symlinks
 RUN chmod +x /app/scripts/*.sh
 
 ENV PATH=/usr/local/bin:/usr/local/lib/node_modules/.bin:/root/.local/bin:/usr/local/go/bin:/usr/bin:/bin:/data/.bun/bin:/data/.bun/install/global/bin
