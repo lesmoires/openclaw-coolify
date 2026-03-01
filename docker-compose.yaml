@@ -35,8 +35,8 @@ services:
       BUN_INSTALL: /data/.bun
       OPENCLAW_GATEWAY_BIND: lan
       OPENCLAW_GATEWAY_PORT: ${OPENCLAW_GATEWAY_PORT:-18789}
-      OPENCLAW_STATE_DIR: /data/.openclaw
-      OPENCLAW_WORKSPACE: /data/openclaw-workspace
+      OPENCLAW_STATE_DIR: /home/node/.openclaw
+      OPENCLAW_WORKSPACE: /home/node/openclaw-workspace
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       MINIMAX_API_KEY: ${MINIMAX_API_KEY}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
@@ -66,9 +66,9 @@ services:
       GITHUB_EMAIL: ${GITHUB_EMAIL}
       OPENCLAW_BETA: ${OPENCLAW_BETA:-false}
     volumes:
-      - openclaw-data:/data
-      - openclaw-config:/root/.openclaw
-      - openclaw-workspace:/root/openclaw-workspace
+      - openclaw-data:/home/node/data
+      - openclaw-config:/home/node/.openclaw
+      - openclaw-workspace:/home/node/openclaw-workspace
     depends_on:
       - docker-proxy
     command: ["bash", "/app/scripts/bootstrap.sh"]
