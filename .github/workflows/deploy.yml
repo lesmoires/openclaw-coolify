@@ -1,0 +1,19 @@
+name: Auto Deploy to Coolify
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Coolify Deploy
+        run: |
+          echo "🚀 Deploying to Coolify..."
+          curl -X GET "${{ secrets.COOLIFY_INSTANCE_URL }}/api/v1/deploy?uuid=${{ secrets.COOLIFY_APP_UUID }}&force=true" \
+            -H "Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}" \
+            -H "Accept: application/json"
+          echo ""
+          echo "✅ Deploy triggered!"
